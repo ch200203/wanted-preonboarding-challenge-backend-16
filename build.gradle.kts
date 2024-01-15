@@ -28,6 +28,13 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j:8.0.33")
     annotationProcessor("org.projectlombok:lombok")
+    // JUnit Jupiter (JUnit 5) 의존성 추가
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
+    // AssertJ 의존성 추가
+    testImplementation("org.assertj:assertj-core")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.vintage:junit-vintage-engine") {
         exclude("org.hamcrest", "hamcrest-core")

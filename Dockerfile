@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11 AS builder
+FROM azul/zulu-openjdk-alpine:17 as builder
 #gradlew 복사
 COPY gradlew .
 #gradle 복사
@@ -13,7 +13,7 @@ RUN chmod +x ./gradlew	#gradlew 실행 권한 부여
 RUN ./gradlew bootJar	#gradlew를 통해 실행 가능한 jar파일 생성
 
 #베이스 이미지 생성
-FROM adoptopenjdk/openjdk11
+FROM azul/zulu-openjdk-alpine:17
 #build이미지에서 build/libs/*.jar 파일을 app.jar로 복사
 COPY --from=builder build/libs/*.jar wanted_ticket.jar
 
