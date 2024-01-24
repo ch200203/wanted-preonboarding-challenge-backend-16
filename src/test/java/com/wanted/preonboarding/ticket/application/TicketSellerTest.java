@@ -12,6 +12,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -41,28 +43,16 @@ public class TicketSellerTest {
             .build();
     }
 
-    @Test
-    @DisplayName("예약 가능한 공연 리스트를 반환합니다.")
-    public void getAllPerformanceInfoList_WhenReservable() {
-        Performance mockPerformance = createMockPerformance("enable");
+    @ParameterizedTest
+    @CsvSource("enable, disable")
+    @DisplayName("공연 및 전시 정보 상태에 따른 목록 조회 후 반환합니다.")
+    void AllPerformanceInfoList(String IsReserve) {
+        Performance mockPerformance = createMockPerformance(IsReserve);
 
-        when(performanceRepository.findByIsReserve("enable"))
+        when(performanceRepository.findByIsReserve(IsReserve))
             .thenReturn(List.of(mockPerformance));
-        List<PerformanceInfo> result = ticketSeller.getAllPerformanceInfoList("enable");
+        List<PerformanceInfo> result = ticketSeller.getAllPerformanceInfoList(IsReserve);
 
         assertThat(result).hasSize(1);
     }
-
-    @Test
-    @DisplayName("예약 불가능한 공연 리스트를 반환합니다.")
-    public void getAllPerformanceInfoList_WhenNotReservable() {
-        Performance mockPerformance = createMockPerformance("disabled");
-
-        when(performanceRepository.findByIsReserve("disabled"))
-            .thenReturn(List.of(mockPerformance));
-        List<PerformanceInfo> result = ticketSeller.getAllPerformanceInfoList("disabled");
-
-        assertThat(result).hasSize(1);
-    }
-
 }
