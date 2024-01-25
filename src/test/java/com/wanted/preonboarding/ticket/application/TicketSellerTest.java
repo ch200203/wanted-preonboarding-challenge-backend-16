@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
+import com.wanted.preonboarding.ticket.domain.dto.PerformanceSeatInfoDTO;
 import com.wanted.preonboarding.ticket.domain.entity.Performance;
+import com.wanted.preonboarding.ticket.domain.entity.PerformanceSeatInfo;
 import com.wanted.preonboarding.ticket.infrastructure.repository.PerformanceRepository;
+import com.wanted.preonboarding.ticket.infrastructure.repository.PerformanceSeatInfoRepository;
 import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +25,9 @@ public class TicketSellerTest {
 
     @Mock
     private PerformanceRepository performanceRepository;
+    @Mock
+    private PerformanceSeatInfoRepository performanceSeatInfoRepository;
+
 
     @InjectMocks
     private TicketSeller ticketSeller;
@@ -43,16 +49,47 @@ public class TicketSellerTest {
             .build();
     }
 
+
+    private PerformanceSeatInfo createMockPerformanceSeatInfo(Performance performance) {
+        return PerformanceSeatInfo.builder()
+            .performanceId(performance)
+            .round(1)
+            .gate(1)
+            .line('A')
+            .seat(1)
+            .isReserve("enable")
+            .build();
+    }
+
     @ParameterizedTest
     @CsvSource("enable, disable")
     @DisplayName("공연 및 전시 정보 상태에 따른 목록 조회 후 반환합니다.")
-    void AllPerformanceInfoList(String IsReserve) {
+    void getAllPerformanceInfoListTest(String IsReserve) {
         Performance mockPerformance = createMockPerformance(IsReserve);
 
+        // 예약 상태에 따라 생성한 테스트 케이스 공연을 찾아서 리턴
         when(performanceRepository.findByIsReserve(IsReserve))
             .thenReturn(List.of(mockPerformance));
         List<PerformanceInfo> result = ticketSeller.getAllPerformanceInfoList(IsReserve);
 
         assertThat(result).hasSize(1);
+        assertThat(result.get(0).getPerformanceId()).isEqualTo(result.get(0).getPerformanceId());
+    }
+
+    @Test
+    @DisplayName("공연 및 전시정보의 좌석 정보를 조회하여 반환 합니다.")
+    void getAllPerformanceSeatInfoListTest() {
+        Performance mockPerformance = createMockPerformance("enable");
+        PerformanceSeatInfo mockSeatInfo = createMockPerformanceSeatInfo(mockPerformance);
+
+        // 테스트 케이스에서 생성한 객체를 리턴
+        when(performanceSeatInfoRepository.findByPerformanceId(mockPerformance.getId()))
+            .thenReturn(List.of(mockSeatInfo));
+
+        List<PerformanceSeatInfoDTO> result =
+            ticketSeller.getPerformanceSeatInfo(mockPerformance.getId());
+
+        assertThat(result).hasSize(1);
+        assertThat(mockSeatInfo.getId()).isEqualTo(result.get(0).getPerformanceSeatId());
     }
 }

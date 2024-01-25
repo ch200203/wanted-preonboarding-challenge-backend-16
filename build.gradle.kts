@@ -24,10 +24,15 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
+
+    // 쿼리 파라미터 로그 라이브러리
+    implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6")
+
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j:8.0.33")
     annotationProcessor("org.projectlombok:lombok")
+
     // JUnit Jupiter (JUnit 5) 의존성 추가
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
@@ -51,5 +56,5 @@ tasks.bootJar {
 }
 
 tasks.bootBuildImage {
-    imageName = "wanted/preonboarding-backend"
+    val imageName = "wanted/preonboarding-backend"
 }
