@@ -7,8 +7,10 @@ import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceSeatInfoDTO;
 import com.wanted.preonboarding.ticket.domain.entity.Performance;
 import com.wanted.preonboarding.ticket.domain.entity.PerformanceSeatInfo;
+import com.wanted.preonboarding.ticket.domain.entity.Reservation;
 import com.wanted.preonboarding.ticket.infrastructure.repository.PerformanceRepository;
 import com.wanted.preonboarding.ticket.infrastructure.repository.PerformanceSeatInfoRepository;
+import com.wanted.preonboarding.ticket.infrastructure.repository.ReservationRepository;
 import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +22,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.transaction.annotation.Transactional;
 
 public class TicketSellerTest {
 
@@ -27,6 +30,8 @@ public class TicketSellerTest {
     private PerformanceRepository performanceRepository;
     @Mock
     private PerformanceSeatInfoRepository performanceSeatInfoRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
 
 
     @InjectMocks
@@ -44,7 +49,7 @@ public class TicketSellerTest {
             .price(10000)
             .round(1)
             .type(1)
-            .start_date(new Date(2024,01,24))
+            .start_date(new Date(2024, 01, 24))
             .isReserve(isReservable.equals("enable") ? "enable" : "disable")
             .build();
     }
@@ -58,6 +63,18 @@ public class TicketSellerTest {
             .line('A')
             .seat(1)
             .isReserve("enable")
+            .build();
+    }
+
+    private static Reservation createMockReservation(Performance performance) {
+        return Reservation.builder()
+            .id(1)
+            .performanceId(performance.getId())
+            .phoneNumber("010-1234-5678")
+            .gate(1)
+            .line('A')
+            .name("손흥민")
+            .round(1)
             .build();
     }
 
@@ -91,5 +108,16 @@ public class TicketSellerTest {
 
         assertThat(result).hasSize(1);
         assertThat(mockSeatInfo.getId()).isEqualTo(result.get(0).getPerformanceSeatId());
+    }
+
+    @Test
+    @DisplayName("고객의 이름과 휴대전화 번호를 통해 예약 정보를 조회 할 수 있다.")
+    void getReserveInfoTest() {
+        Performance mockPerformance = createMockPerformance("enable");
+        Reservation mockReservation = createMockReservation(mockPerformance);
+
+        when(reservationRepository.findByNameAndPhoneNumber(mockReservation.getName(),
+            mockReservation.getPhoneNumber())).thenReturn(mockReservation);
+
     }
 }

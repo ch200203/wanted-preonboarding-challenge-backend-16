@@ -4,6 +4,7 @@ import com.wanted.preonboarding.core.domain.response.ResponseHandler;
 import com.wanted.preonboarding.ticket.application.TicketSeller;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceInfo;
 import com.wanted.preonboarding.ticket.domain.dto.PerformanceSeatInfoDTO;
+import com.wanted.preonboarding.ticket.domain.dto.ReserveInfo;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -61,5 +62,19 @@ public class QueryController {
      * Request Message: 고객의 이름, 휴대 전화
      * Response Message: 예매가 완료된 공연의 정보(회차, 공연명, 좌석정보, 공연ID) + 예매자 정보(이름, 연락처)
      */
+    @GetMapping("/reservation")
+    public ResponseEntity<ResponseHandler<ReserveInfo>> getReservationInfo(
+        @RequestParam String customerName,
+        @RequestParam String phoneNumber) {;
+
+        return ResponseEntity
+            .ok()
+            .body(ResponseHandler.<ReserveInfo>builder()
+                .message("Success")
+                .statusCode(HttpStatus.OK)
+                .data(null)
+                .build()
+            );
+    }
 
 }
